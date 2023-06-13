@@ -25,7 +25,7 @@ const defaultProps = {
 
 const AnonymousReportFooter = (props) => (
     <View style={styles.anonymousRoomFooter}>
-        <View style={[styles.flexRow]}>
+        <View style={[styles.flexRow, styles.flex1, styles.mnw25]}>
             <AvatarWithDisplayName
                 report={props.report}
                 size={CONST.AVATAR_SIZE.MEDIUM}
