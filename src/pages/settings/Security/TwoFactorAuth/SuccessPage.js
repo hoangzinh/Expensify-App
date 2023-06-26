@@ -7,6 +7,8 @@ import ROUTES from '../../../../ROUTES';
 import FullPageOfflineBlockingView from '../../../../components/BlockingViews/FullPageOfflineBlockingView';
 import FireworksAnimation from '../../../../../assets/animations/Fireworks.json';
 import ConfirmationPage from '../../../../components/ConfirmationPage';
+import compose from '../../../../libs/compose';
+import withAccountOrRedirectIfNoRecoverCode from './withAccountOrRedirectIfNoRecoverCode';
 
 const defaultProps = {};
 
@@ -39,4 +41,7 @@ function SuccessPage(props) {
 SuccessPage.propTypes = withLocalizePropTypes;
 SuccessPage.defaultProps = defaultProps;
 
-export default withLocalize(SuccessPage);
+export default compose(
+    withLocalize,
+    withAccountOrRedirectIfNoRecoverCode,
+)(SuccessPage);

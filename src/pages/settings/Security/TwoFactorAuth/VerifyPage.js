@@ -22,6 +22,8 @@ import PressableWithDelayToggle from '../../../../components/Pressable/Pressable
 import TwoFactorAuthForm from './TwoFactorAuthForm';
 import QRCode from '../../../../components/QRCode';
 import expensifyLogo from '../../../../../assets/images/expensify-logo-round-transparent.png';
+import * as TwoFactorAuthActions from '../../../../libs/actions/TwoFactorAuthActions';
+import withAccountOrRedirectIfNoRecoverCode from './withAccountOrRedirectIfNoRecoverCode';
 import CONST from '../../../../CONST';
 
 const propTypes = {
@@ -63,6 +65,7 @@ function VerifyPage(props) {
         if (!props.account.requiresTwoFactorAuth) {
             return;
         }
+        TwoFactorAuthActions.clearTwoFactorAuthData();
         Navigation.navigate(ROUTES.SETTINGS_2FA_SUCCESS);
     }, [props.account.requiresTwoFactorAuth]);
 
@@ -160,7 +163,5 @@ VerifyPage.defaultProps = defaultProps;
 
 export default compose(
     withLocalize,
-    withOnyx({
-        account: {key: ONYXKEYS.ACCOUNT},
-    }),
+    withAccountOrRedirectIfNoRecoverCode,
 )(VerifyPage);

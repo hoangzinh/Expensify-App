@@ -11,6 +11,8 @@ import * as Expensicons from '../../../../components/Icon/Expensicons';
 import themeColors from '../../../../styles/themes/default';
 import styles from '../../../../styles/styles';
 import ConfirmModal from '../../../../components/ConfirmModal';
+import withAccountOrRedirectIfNoRecoverCode from './withAccountOrRedirectIfNoRecoverCode';
+import compose from '../../../../libs/compose';
 
 const defaultProps = {};
 
@@ -67,4 +69,7 @@ function IsEnabledPage(props) {
 IsEnabledPage.propTypes = withLocalizePropTypes;
 IsEnabledPage.defaultProps = defaultProps;
 
-export default withLocalize(IsEnabledPage);
+export default compose(
+    withLocalize,
+    withAccountOrRedirectIfNoRecoverCode,
+)(IsEnabledPage);

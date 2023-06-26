@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {withOnyx} from 'react-native-onyx';
 import {ActivityIndicator, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import _ from 'underscore';
@@ -20,12 +19,12 @@ import Button from '../../../../components/Button';
 import PressableWithDelayToggle from '../../../../components/Pressable/PressableWithDelayToggle';
 import Text from '../../../../components/Text';
 import Section from '../../../../components/Section';
-import ONYXKEYS from '../../../../ONYXKEYS';
 import Clipboard from '../../../../libs/Clipboard';
 import themeColors from '../../../../styles/themes/default';
 import localFileDownload from '../../../../libs/localFileDownload';
-import * as TwoFactorAuthActions from '../../../../libs/actions/TwoFactorAuthActions';
 import * as StyleUtils from '../../../../styles/StyleUtils';
+import * as Session from '../../../../libs/actions/Session';
+import withAccountOrRedirectIfNoRecoverCode from './withAccountOrRedirectIfNoRecoverCode';
 
 const propTypes = {
     ...withLocalizePropTypes,
@@ -51,9 +50,10 @@ function CodesPage(props) {
     // Here, this eslint rule will make the unmount effect unreadable, possibly confusing with mount
     // eslint-disable-next-line arrow-body-style
     useEffect(() => {
-        return () => {
-            TwoFactorAuthActions.clearTwoFactorAuthData();
-        };
+        if (props.account && props.account.recoveryCodes) {
+            return;
+        }
+        Session.toggleTwoFactorAuth(true);
     }, []);
 
     return (
@@ -145,7 +145,5 @@ CodesPage.defaultProps = defaultProps;
 export default compose(
     withLocalize,
     withWindowDimensions,
-    withOnyx({
-        account: {key: ONYXKEYS.ACCOUNT},
-    }),
+    withAccountOrRedirectIfNoRecoverCode
 )(CodesPage);

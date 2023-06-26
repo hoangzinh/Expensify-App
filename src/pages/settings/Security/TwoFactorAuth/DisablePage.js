@@ -12,6 +12,8 @@ import FixedFooter from '../../../../components/FixedFooter';
 import Button from '../../../../components/Button';
 import * as Session from '../../../../libs/actions/Session';
 import variables from '../../../../styles/variables';
+import compose from '../../../../libs/compose';
+import withAccountOrRedirectIfNoRecoverCode from './withAccountOrRedirectIfNoRecoverCode';
 
 const propTypes = {
     ...withLocalizePropTypes,
@@ -54,4 +56,7 @@ function DisablePage(props) {
 DisablePage.propTypes = propTypes;
 DisablePage.defaultProps = defaultProps;
 
-export default withLocalize(DisablePage);
+export default compose(
+    withLocalize,
+    withAccountOrRedirectIfNoRecoverCode,
+)(DisablePage);
