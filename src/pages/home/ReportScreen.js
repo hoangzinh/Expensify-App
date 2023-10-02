@@ -88,12 +88,16 @@ const propTypes = {
     /** All of the personal details for everyone */
     personalDetails: PropTypes.objectOf(personalDetailsPropType),
 
+<<<<<<< HEAD
     /** Onyx function that marks the component ready for hydration */
     markReadyForHydration: PropTypes.func,
 
     /** Whether user is leaving the current report */
     userLeavingStatus: PropTypes.bool,
 
+=======
+    ...windowDimensionsPropTypes,
+>>>>>>> parent of fa6a767987 (Merge pull request #24407 from wildan-m/wildan/fix/21518/client-pusher-method)
     ...viewportOffsetTopPropTypes,
     ...withCurrentReportIDPropTypes,
 };
@@ -112,7 +116,6 @@ const defaultProps = {
     betas: [],
     policies: {},
     accountManagerReportID: null,
-    userLeavingStatus: false,
     personalDetails: {},
     markReadyForHydration: null,
     ...withCurrentReportIDDefaultProps,
@@ -153,7 +156,6 @@ function ReportScreen({
     viewportOffsetTop,
     isComposerFullSize,
     errors,
-    userLeavingStatus,
     currentReportID,
 }) {
     const {translate} = useLocalize();
@@ -163,7 +165,12 @@ function ReportScreen({
     const flatListRef = useRef();
     const reactionListRef = useRef();
     const prevReport = usePrevious(report);
+<<<<<<< HEAD
     const prevUserLeavingStatus = usePrevious(userLeavingStatus);
+=======
+
+    const [skeletonViewContainerHeight, setSkeletonViewContainerHeight] = useState(0);
+>>>>>>> parent of fa6a767987 (Merge pull request #24407 from wildan-m/wildan/fix/21518/client-pusher-method)
     const [isBannerVisible, setIsBannerVisible] = useState(true);
 
     const reportID = getReportID(route);
@@ -186,7 +193,6 @@ function ReportScreen({
     const policy = policies[`${ONYXKEYS.COLLECTION.POLICY}${report.policyID}`] || {};
 
     const isTopMostReportId = currentReportID === getReportID(route);
-    const didSubscribeToReportLeavingEvents = useRef(false);
 
     const isDefaultReport = checkDefaultReport(report);
 
@@ -246,7 +252,7 @@ function ReportScreen({
         }
 
         // It possible that we may not have the report object yet in Onyx yet e.g. we navigated to a URL for an accessible report that
-        // is not stored locally yet. If report.reportID exists, then the report has been stored locally and nothing more needs to be done.
+        // is not stored locally yet. If props.report.reportID exists, then the report has been stored locally and nothing more needs to be done.
         // If it doesn't exist, then we fetch the report from the API.
         if (report.reportID && report.reportID === getReportID(route)) {
             return;
@@ -294,14 +300,6 @@ function ReportScreen({
     useEffect(() => {
         fetchReportIfNeeded();
         ComposerActions.setShouldShowComposeInput(true);
-        return () => {
-            if (!didSubscribeToReportLeavingEvents) {
-                return;
-            }
-
-            Report.unsubscribeFromLeavingRoomReportChannel(report.reportID);
-        };
-
         // I'm disabling the warning, as it expects to use exhaustive deps, even though we want this useEffect to run only on the first render.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -312,46 +310,19 @@ function ReportScreen({
             firstRenderRef.current = false;
             return;
         }
-
-        const onyxReportID = report.reportID;
-        const prevOnyxReportID = prevReport.reportID;
-        const routeReportID = getReportID(route);
-
-        // Navigate to the Concierge chat if the room was removed from another device (e.g. user leaving a room)
-        if (
-            // non-optimistic case
-            (!prevUserLeavingStatus && userLeavingStatus) ||
-            // optimistic case
-            (prevOnyxReportID && prevOnyxReportID === routeReportID && !onyxReportID && prevReport.statusNum === CONST.REPORT.STATUS.OPEN && report.statusNum === CONST.REPORT.STATUS.CLOSED)
-        ) {
-            Navigation.goBack();
-            Report.navigateToConciergeChat();
-            return;
-        }
-
         // If you already have a report open and are deeplinking to a new report on native,
         // the ReportScreen never actually unmounts and the reportID in the route also doesn't change.
         // Therefore, we need to compare if the existing reportID is the same as the one in the route
         // before deciding that we shouldn't call OpenReport.
+        const onyxReportID = report.reportID;
+        const routeReportID = getReportID(route);
         if (onyxReportID === prevReport.reportID && (!onyxReportID || onyxReportID === routeReportID)) {
             return;
         }
 
         fetchReportIfNeeded();
         ComposerActions.setShouldShowComposeInput(true);
-    }, [route, report, errors, fetchReportIfNeeded, prevReport.reportID, prevUserLeavingStatus, userLeavingStatus, prevReport.statusNum]);
-
-    useEffect(() => {
-        // Ensures subscription event succeeds when the report/workspace room is created optimistically.
-        // Check if the optimistic `OpenReport` or `AddWorkspaceRoom` has succeeded by confirming
-        // any `pendingFields.createChat` or `pendingFields.addWorkspaceRoom` fields are set to null.
-        // Existing reports created will have empty fields for `pendingFields`.
-        const didCreateReportSuccessfully = !report.pendingFields || (!report.pendingFields.addWorkspaceRoom && !report.pendingFields.createChat);
-        if (!didSubscribeToReportLeavingEvents.current && didCreateReportSuccessfully) {
-            Report.subscribeToReportLeavingEvents(reportID);
-            didSubscribeToReportLeavingEvents.current = true;
-        }
-    }, [report, didSubscribeToReportLeavingEvents, reportID]);
+    }, [route, report, errors, fetchReportIfNeeded, prevReport.reportID]);
 
     const onListLayout = useCallback(() => {
         if (!markReadyForHydration) {
@@ -371,10 +342,9 @@ function ReportScreen({
                 !report.reportID &&
                 !isOptimisticDelete &&
                 !report.isLoadingReportActions &&
-                !isLoading &&
-                !userLeavingStatus) ||
+                !isLoading) ||
             shouldHideReport,
-        [report, isLoading, shouldHideReport, isDefaultReport, isOptimisticDelete, userLeavingStatus],
+        [report, isLoading, shouldHideReport, isDefaultReport, isOptimisticDelete],
     );
 
     return (
@@ -513,6 +483,33 @@ export default compose(
                 initialValue: false,
             },
         },
+<<<<<<< HEAD
         true,
     ),
+=======
+        reportActions: {
+            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${getReportID(route)}`,
+            canEvict: false,
+            selector: ReportActionsUtils.getSortedReportActionsForDisplay,
+        },
+        report: {
+            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT}${getReportID(route)}`,
+        },
+        isComposerFullSize: {
+            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_IS_COMPOSER_FULL_SIZE}${getReportID(route)}`,
+        },
+        betas: {
+            key: ONYXKEYS.BETAS,
+        },
+        policies: {
+            key: ONYXKEYS.COLLECTION.POLICY,
+        },
+        accountManagerReportID: {
+            key: ONYXKEYS.ACCOUNT_MANAGER_REPORT_ID,
+        },
+        personalDetails: {
+            key: ONYXKEYS.PERSONAL_DETAILS_LIST,
+        },
+    }),
+>>>>>>> parent of fa6a767987 (Merge pull request #24407 from wildan-m/wildan/fix/21518/client-pusher-method)
 )(ReportScreen);
