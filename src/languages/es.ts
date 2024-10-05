@@ -2957,6 +2957,10 @@ const translations = {
             },
         },
         qbd: {
+            importDescription: 'Elige que configuraciónes de codificación son importadas desde QuickBooks Online a Expensify.',
+            classes: 'Clases',
+            items: 'Items',
+            customers: 'Clientes/proyectos',
             qbdSetup: 'Configuración de QuickBooks Desktop',
             requiredSetupDevice: {
                 title: 'No se puede conectar desde este dispositivo',

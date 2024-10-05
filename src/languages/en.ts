@@ -2921,6 +2921,10 @@ const translations = {
             },
         },
         qbd: {
+            importDescription: 'Choose which coding configurations to import from QuickBooks Desktop to Expensify.',
+            classes: 'Classes',
+            items: 'Items',
+            customers: 'Customers/projects',
             qbdSetup: 'QuickBooks Desktop setup',
             requiredSetupDevice: {
                 title: "Can't connect from this device",
