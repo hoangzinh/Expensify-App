@@ -463,7 +463,7 @@ function ReportActionsList({
     }, [prevSortedVisibleReportActionsObjects, lastAction]);
 
     const scrollToBottomForCurrentUserAction = useCallback(
-        (isFromCurrentUser: boolean) => {
+        (isFromCurrentUser: boolean, reportActionIDFromEvent?: string) => {
             // If a new comment is added and it's from the current user scroll to the bottom otherwise leave the user positioned where
             // they are now in the list.
             if (!isFromCurrentUser || scrollingVerticalOffset.current === 0 || !isReportScreenTopmostCentralPane()) {
@@ -473,7 +473,9 @@ function ReportActionsList({
                 Navigation.navigate(ROUTES.REPORT_WITH_ID.getRoute(report.reportID));
                 return;
             }
-            if (!isNewMessageDisplayed) {
+
+            const reportAction = sortedVisibleReportActionsObjects[reportActionIDFromEvent];
+            if (!isNewMessageDisplayed && !reportAction) {
                 setPendingBottomScroll(true);
             } else {
                 InteractionManager.runAfterInteractions(() => {
@@ -481,7 +483,7 @@ function ReportActionsList({
                 });
             }
         },
-        [reportScrollManager, report.reportID, isNewMessageDisplayed],
+        [reportScrollManager, report.reportID, isNewMessageDisplayed, sortedVisibleReportActionsObjects],
     );
 
     useEffect(() => {

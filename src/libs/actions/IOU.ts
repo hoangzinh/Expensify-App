@@ -4393,7 +4393,7 @@ function requestMoney(requestMoneyInformation: RequestMoneyInformation) {
     InteractionManager.runAfterInteractions(() => removeDraftTransaction(CONST.IOU.OPTIMISTIC_TRANSACTION_ID));
     Navigation.dismissModal(isSearchTopmostCentralPane() ? undefined : activeReportID);
     if (activeReportID) {
-        notifyNewAction(activeReportID, payeeAccountID);
+        notifyNewAction(activeReportID, payeeAccountID, reportPreviewAction.reportActionID);
     }
 }
 
