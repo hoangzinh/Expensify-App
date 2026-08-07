@@ -54,7 +54,7 @@ const CURRENT_USER_ACCOUNT_ID = 1;
 const CURRENT_USER_LOGIN = 'test@user.com';
 const REPORT_ID = '100';
 const OTHER_USER_ACCOUNT_ID = 2;
-const REPORT_ATTRIBUTES = createMock<ReportAttributesDerivedValue['reports']>({someReportKey: {reportName: 'Test Report'}});
+const DERIVED_REPORT_NAME = 'Test Report';
 
 describe('showReportActionNotification', () => {
     beforeAll(() => {
@@ -102,20 +102,17 @@ describe('showReportActionNotification', () => {
             undefined,
             CURRENT_USER_ACCOUNT_ID,
             CURRENT_USER_LOGIN,
-            REPORT_ATTRIBUTES,
+            DERIVED_REPORT_NAME,
         );
         await waitForBatchedUpdates();
 
         expect(mockShowModifiedExpenseNotification).toHaveBeenCalledTimes(1);
-        const callArgs = mockShowModifiedExpenseNotification.mock.calls.at(0)?.at(0);
-        if (!callArgs) {
-            throw new Error('Modified expense notification arguments are missing');
-        }
-        expect(callArgs.reportAttributes).toBe(REPORT_ATTRIBUTES);
+        const callArgs = mockShowModifiedExpenseNotification.mock.calls.at(0)?.at(0) as Record<string, unknown>;
+        expect(callArgs.derivedReportName).toBe(DERIVED_REPORT_NAME);
         expect(mockShowCommentNotification).not.toHaveBeenCalled();
     });
 
-    it('passes undefined reportAttributes to showModifiedExpenseNotification when not provided', async () => {
+    it('passes undefined derivedReportName to showModifiedExpenseNotification when not provided', async () => {
         await setupReport();
 
         const reportAction = {
@@ -138,11 +135,8 @@ describe('showReportActionNotification', () => {
         await waitForBatchedUpdates();
 
         expect(mockShowModifiedExpenseNotification).toHaveBeenCalledTimes(1);
-        const callArgs = mockShowModifiedExpenseNotification.mock.calls.at(0)?.at(0);
-        if (!callArgs) {
-            throw new Error('Modified expense notification arguments are missing');
-        }
-        expect(callArgs.reportAttributes).toBeUndefined();
+        const callArgs = mockShowModifiedExpenseNotification.mock.calls.at(0)?.at(0) as Record<string, unknown>;
+        expect(callArgs.derivedReportName).toBeUndefined();
         expect(mockShowCommentNotification).not.toHaveBeenCalled();
     });
 
@@ -164,7 +158,7 @@ describe('showReportActionNotification', () => {
             undefined,
             CURRENT_USER_ACCOUNT_ID,
             CURRENT_USER_LOGIN,
-            REPORT_ATTRIBUTES,
+            DERIVED_REPORT_NAME,
         );
         await waitForBatchedUpdates();
 
